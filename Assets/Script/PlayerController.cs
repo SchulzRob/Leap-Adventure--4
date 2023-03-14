@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,11 +14,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     float Jump = 10f;
 
+    int maxHealth = 5;
+
+    public int score;
+    public Transform holder;
+    TextMeshProUGUI healthText;
+    TextMeshProUGUI scoreText;
+
     Transform myTransform;
     SpriteRenderer mySprite;
     Rigidbody2D rb;
     Animator anim;
-    public int PlayerHealth = 3;  
+     int PlayerHealth = 3;  
 
     bool isJump;
     // Start is called before the first frame update
@@ -24,10 +33,16 @@ public class PlayerController : MonoBehaviour
     {
         isJump = false;
         float myFloat = 5.5f;
+        PlayerHealth = maxHealth;
+        score = 0;
         myTransform = GetComponent<Transform>();
         mySprite = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();  
+        anim = GetComponent<Animator>();
+        healthText = holder.Find("TxtHealth").GetComponent<TextMeshProUGUI>();
+        scoreText = holder.Find("TxtScore").GetComponent<TextMeshProUGUI>();
+        scoreText.text = "Score :" + score; //"Score : 0";
+        healthText.text = PlayerHealth + "/" + maxHealth; //"5/5";
 
     }
 
@@ -51,10 +66,13 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(Input.GetAxis("Horizotal"));
         //rb.velocity = new Vector2(Speed, rb.velocity.y);
         //rb.velocity = new Vector2(Speed * Input.GetAxis("Horizontal") * Time.deltaTime, rb.velocity.y);
+
         if (Input.GetAxis("Horizontal") > 0)
             mySprite.flipX = false;
         else if (Input.GetAxis("Horizontal") < 0)
             mySprite.flipX = true;
+
+
         if (Input.GetButtonDown("Jump") && !isJump)
         {
             rb.velocity = new Vector2(0, Jump);
@@ -62,7 +80,12 @@ public class PlayerController : MonoBehaviour
         }
         if (Mathf.Abs(rb.velocity.y) < 0.01f)
             isJump = false;
-            anim.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
+        anim.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
+
+        if (Mathf.Abs(rb.velocity.y) < 0.01f)
+            isJump = false;
+
+        anim.SetFloat("Sp", Mathf.Abs(rb.velocity.x));
         
     }
     private void FixedUpdate()
@@ -80,18 +103,46 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.CompareTag("Enamy"))
         {
-            
-            if(isJump && rb.velocity.y < 0)
+
+            if (isJump && rb.velocity.y < 0)
             {
                 Destroy(collision.gameObject);
-                
+
             }
             else
-            PlayerHealth = PlayerHealth - 1;
+            {
+                PlayerHealth = PlayerHealth - 1;
+                //Debug.Log("Current Health: " + PlayerHealth + "/" + maxHealth);
+                healthText.text = PlayerHealth + "/" + maxHealth;
+                if (PlayerHealth <= 0)
+                    Debug.Log("You are Died");
+            }
         }
-        Debug.Log(PlayerHealth);
-        if (PlayerHealth <= 0)
-            Debug.Log("You are Died");
+        else if(collision.CompareTag("Gem"))
+        {
+            score += 100;
+            scoreText.text = "Score: " + score;
+            Destroy(collision.gameObject);
+
+        }
+        else if (collision.CompareTag("Cherry"))
+        {
+            score += 50;
+            scoreText.text = "Score: " + score;
+            Destroy(collision.gameObject);
+
+        }
+        else if (collision.CompareTag("Star"))
+        {
+            if (PlayerHealth < maxHealth)
+                PlayerHealth++;
+
+            //Debug.Log("Current Health: " + PlayerHealth + "/" + maxHealth);
+            healthText.text = PlayerHealth + "/" + maxHealth;
+            Destroy(collision.gameObject);
+
+        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -104,7 +155,11 @@ public class PlayerController : MonoBehaviour
 
             }
             else
+            {
                 PlayerHealth = PlayerHealth - 1;
+                //Debug.Log("Current Health: " + PlayerHealth + "/" + maxHealth);
+                healthText.text = PlayerHealth + "/" + maxHealth;
+            }
         }
     }
 
