@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -68,14 +69,43 @@ public class PlayerController : MonoBehaviour
     {
         rb.velocity = new Vector2(Sp * Input.GetAxis("Horizontal"), rb.velocity.y);
         //Debug.Log(Time.deltaTime);
+
+        if(Input.GetButtonDown("Jump") && isJump == false)
+        {
+            rb.velocity = new Vector2(0, Jump);
+            isJump = true;
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enamy"))
-            PlayerHealth--;
+        {
+            
+            if(isJump && rb.velocity.y < 0)
+            {
+                Destroy(collision.gameObject);
+                
+            }
+            else
+            PlayerHealth = PlayerHealth - 1;
+        }
         Debug.Log(PlayerHealth);
         if (PlayerHealth <= 0)
             Debug.Log("You are Died");
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enamy"))
+        {
+            if (isJump && rb.velocity.y < 0)
+            {
+                Destroy(collision.gameObject);
+
+            }
+            else
+                PlayerHealth = PlayerHealth - 1;
+        }
     }
 
 }
