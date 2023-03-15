@@ -9,7 +9,7 @@ public class Opossum : MonoBehaviour
     SpriteRenderer sr;
 
     [SerializeField]
-    float speed;
+      float speed =0.01f;
 
     bool isRight = true;
 

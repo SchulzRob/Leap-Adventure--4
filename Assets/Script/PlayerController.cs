@@ -8,7 +8,7 @@ using TMPro;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    float Sp = 0.03f;
+    float Speed = 0.03f;
 
 
     [SerializeField]
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         isJump = false;
-        float myFloat = 5.5f;
+        //float myFloat = 5.5f;
         PlayerHealth = maxHealth;
         score = 0;
         myTransform = GetComponent<Transform>();
@@ -78,19 +78,21 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2(0, Jump);
             isJump = true;
         }
+
         if (Mathf.Abs(rb.velocity.y) < 0.01f)
             isJump = false;
         anim.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
 
+        
         if (Mathf.Abs(rb.velocity.y) < 0.01f)
             isJump = false;
 
-        anim.SetFloat("Sp", Mathf.Abs(rb.velocity.x));
+        anim.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
         
     }
     private void FixedUpdate()
     {
-        rb.velocity = new Vector2(Sp * Input.GetAxis("Horizontal"), rb.velocity.y);
+        rb.velocity = new Vector2(Speed * Input.GetAxis("Horizontal"), rb.velocity.y);
         //Debug.Log(Time.deltaTime);
 
         if(Input.GetButtonDown("Jump") && isJump == false)
