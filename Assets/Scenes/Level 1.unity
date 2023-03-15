@@ -586,6 +586,12 @@ MonoBehaviour:
   Jump: 18
   score: 0
   holder: {fileID: 235671667}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!50 &255256926
 Rigidbody2D:
   serializedVersion: 4
@@ -27364,7 +27370,7 @@ GameObject:
   - component: {fileID: 1358024051}
   - component: {fileID: 1358024050}
   - component: {fileID: 1358024052}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fornground
   m_TagString: Untagged
   m_Icon: {fileID: 0}

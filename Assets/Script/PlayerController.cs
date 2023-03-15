@@ -28,7 +28,16 @@ public class PlayerController : MonoBehaviour
     SpriteRenderer mySprite;
     Rigidbody2D rb;
     Animator anim;
-     int PlayerHealth = 3;  
+     int PlayerHealth = 3; 
+      private bool isWallSliding;
+    private float wallSlidingSpeed = 2f;
+
+    private bool isWallJumping;
+    private float wallJumpingDirection;
+    private float wallJumpingTime = 0.2f;
+    private float wallJumpingCounter;
+    private float wallJumpingDuration = 0.4f;
+    private Vector2 wallJumpingPower = new Vector2(8f, 16f); 
 
     bool isJump;
     // Start is called before the first frame update
@@ -48,12 +57,15 @@ public class PlayerController : MonoBehaviour
         scoreText = holder.Find("TxtScore").GetComponent<TextMeshProUGUI>();
         scoreText.text = "Score :" + score; //"Score : 0";
         healthText.text = PlayerHealth + "/" + maxHealth; //"5/5";
+        
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        WallSlide();
+        WallJump();
         //if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         //{
         //   transform.Translate(new Vector3(-1 * Speed, 0));
@@ -167,6 +179,51 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+ private void WallSlide()
+    {
+        if (IsWalled() &&!isGrounded() && Input.GetAxisRaw("Horizontal") != 0f)
+        {
+            isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+    }
+private void WallJump()
+    {
+        if (isWallSliding)
+        {
+            isWallJumping = false;
+            wallJumpingDirection = -transform.localScale.x;
+            wallJumpingCounter = wallJumpingTime;
+
+            CancelInvoke(nameof(StopWallJumping));
+        }
+        else
+        {
+            wallJumpingCounter -= Time.deltaTime;
+        }
+
+        if (Input.GetButtonDown("Jump") && wallJumpingCounter > 0f)
+        {
+            isWallJumping = true;
+            rb.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            wallJumpingCounter = 0f;
+
+            if (transform.localScale.x != wallJumpingDirection)
+            {
+                mySprite.flipX = !mySprite.flipX;
+            }
+
+            Invoke(nameof(StopWallJumping), wallJumpingDuration);
+        }
+    }
+    private void StopWallJumping()
+    {
+        isWallJumping = false;
+    }
     private bool isGrounded()
     {
        
@@ -180,6 +237,21 @@ public class PlayerController : MonoBehaviour
         }
 
         Debug.DrawRay(Ccollider2D.bounds.center, Vector2.down * (Ccollider2D.bounds.extents.y + 1.5f), Color.red);
+        Debug.Log(raycastHit.collider);
+        return raycastHit.collider != null;
+    }
+     private bool IsWalled()
+    {
+       RaycastHit2D raycastHit = Physics2D.Raycast(Ccollider2D.bounds.center,Vector2.right,Ccollider2D.bounds.extents.y+ 1.5f,wallLayer);
+        Color raycolor;
+        if(raycastHit.collider != null) {
+            raycolor = Color.green;
+        }
+        else{
+            raycolor = Color.red;
+        }
+
+        Debug.DrawRay(Ccollider2D.bounds.center, Vector2.right * (Ccollider2D.bounds.extents.y + 1.5f), Color.red);
         Debug.Log(raycastHit.collider);
         return raycastHit.collider != null;
     }
