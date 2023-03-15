@@ -38,12 +38,17 @@ public class PlayerController : MonoBehaviour
     private float wallJumpingCounter;
     private float wallJumpingDuration = 0.4f;
     private Vector2 wallJumpingPower = new Vector2(8f, 16f); 
+    private bool doubleJump;
 
     bool isJump;
+
+
+    [SerializeField] private bool isGrounde;
+    [SerializeField] private bool IsWalle;
     // Start is called before the first frame update
     void Start()
     {
-        isJump = false;
+        //isJump = false;
         //float myFloat = 5.5f;
         PlayerHealth = maxHealth;
         score = 0;
@@ -89,11 +94,19 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetAxis("Horizontal") < 0)
             mySprite.flipX = true;
 
-
-        if (Input.GetButtonDown("Jump") && isGrounded() )
+        if (isGrounded() && !Input.GetButton("Jump"))
         {
-            rb.velocity = new Vector2(0, Jump);
-            
+            doubleJump = false;
+        }
+
+
+        if (Input.GetButtonDown("Jump") )
+        {
+            if (isGrounded() || doubleJump)
+            {
+            rb.velocity = new Vector2(rb.velocity.x, Jump);
+            doubleJump = !doubleJump;
+            }
         }
         if (Mathf.Abs(rb.velocity.y) < 0.01f){
             
@@ -166,7 +179,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enamy"))
         {
-            if (isJump && rb.velocity.y < 0)
+            if (!isGrounded() && rb.velocity.y < 0)
             {
                 Destroy(collision.gameObject);
 
