@@ -69,6 +69,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isGrounde = isGrounded();
+        IsWalle = IsWalled();
         WallSlide();
         WallJump();
         //if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
@@ -256,6 +258,7 @@ private void WallJump()
      private bool IsWalled()
     {
        RaycastHit2D raycastHit = Physics2D.Raycast(Ccollider2D.bounds.center,Vector2.right,Ccollider2D.bounds.extents.y+ 1.5f,wallLayer);
+       RaycastHit2D raycastHit2 = Physics2D.Raycast(Ccollider2D.bounds.center,Vector2.left,Ccollider2D.bounds.extents.y+ 1.5f,wallLayer);
         Color raycolor;
         if(raycastHit.collider != null) {
             raycolor = Color.green;
@@ -266,7 +269,7 @@ private void WallJump()
 
         Debug.DrawRay(Ccollider2D.bounds.center, Vector2.right * (Ccollider2D.bounds.extents.y + 1.5f), Color.red);
         Debug.Log(raycastHit.collider);
-        return raycastHit.collider != null;
+        return ((raycastHit.collider != null && !mySprite.flipX) || (raycastHit2.collider != null && mySprite.flipX));
     }
 
 }
