@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(myTransform.position.y <= -45f)
+        if(myTransform.position.y <= -45f||PlayerHealth < 1)
         {
             GameOver.dead = true;
         }
