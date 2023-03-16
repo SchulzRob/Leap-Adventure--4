@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -69,10 +69,20 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(myTransform.position.y <= -45f)
+        {
+            GameOver.dead = true;
+        }
+        else
+        {
+             GameOver.dead = false;
+            
+        }
         isGrounde = isGrounded();
         IsWalle = IsWalled();
         WallSlide();
         WallJump();
+        respawn();
         //if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         //{
         //   transform.Translate(new Vector3(-1 * Speed, 0));
@@ -146,7 +156,8 @@ public class PlayerController : MonoBehaviour
                 PlayerHealth = PlayerHealth - 1;
                 //Debug.Log("Current Health: " + PlayerHealth + "/" + maxHealth);
                 healthText.text = PlayerHealth + "/" + maxHealth;
-                if (PlayerHealth <= 0)
+                if (PlayerHealth <= 1)
+                    GameOver.dead = true;
                     Debug.Log("You are Died");
             }
         }
@@ -188,7 +199,12 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                PlayerHealth = PlayerHealth - 1;
+                if(PlayerHealth <= 1){
+                    PlayerHealth = 0;
+                    GameOver.dead = true;
+
+                }
+                else {PlayerHealth = PlayerHealth - 1;}
                 //Debug.Log("Current Health: " + PlayerHealth + "/" + maxHealth);
                 healthText.text = PlayerHealth + "/" + maxHealth;
             }
@@ -271,5 +287,12 @@ private void WallJump()
         Debug.Log(raycastHit.collider);
         return ((raycastHit.collider != null && !mySprite.flipX) || (raycastHit2.collider != null && mySprite.flipX));
     }
-
+    public void isDead(){
+        if(PlayerHealth <= 0)
+        {}
+    }
+    public void respawn(){
+        if(Input.GetButtonDown("Respawn")){
+SceneManager.LoadScene("Level 1");}
+    }
 }
