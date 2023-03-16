@@ -185,6 +185,9 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.gameObject);
 
         }
+        else if(collision.CompareTag("Finish")){
+            LevelEnd.finish = true;
+        }
 
     }
 
